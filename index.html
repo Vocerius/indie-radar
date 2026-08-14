@@ -25,10 +25,7 @@
       border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 100;
     }
-    .header-inner {
-      display: flex; justify-content: space-between; align-items: center;
-      height: 64px;
-    }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; height: 64px; }
 
     .logo {
       font-size: 20px; font-weight: 700; letter-spacing: 1px; color: var(--text);
@@ -52,7 +49,7 @@
     .filter-bar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
     .input-field, .select-field, .textarea-field {
       background: var(--panel-bg); border: 1px solid var(--border); color: var(--text);
-      padding: 10px 14px; border-radius: 4px; font-size: 14px; outline: none;
+      padding: 10px 14px; border-radius: 4px; font-size: 14px; outline: none; width: 100%;
     }
     .input-field:focus, .select-field:focus, .textarea-field:focus { border-color: var(--border-focus); }
     .search-input { flex-grow: 1; min-width: 200px; }
@@ -63,7 +60,7 @@
       background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px;
       overflow: hidden; display: flex; flex-direction: column; cursor: pointer;
     }
-    .card:hover { border-color: var(--border-focus); } /* Смена цвета рамки */
+    .card:hover { border-color: var(--border-focus); }
 
     .banner-container { width: 100%; aspect-ratio: 16 / 9; background: #000; position: relative; overflow: hidden; }
     .card-banner { width: 100%; height: 100%; object-fit: cover; }
@@ -83,6 +80,10 @@
       display: block; width: 100%; text-align: center; background: var(--text); color: var(--bg);
       font-weight: 600; font-size: 13px; padding: 10px; border-radius: 4px; text-decoration: none; border: none; cursor: pointer;
     }
+    .btn-secondary {
+      background: var(--accent-bg); color: var(--text); border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--border-focus); }
 
     .mobile-nav {
       display: none; position: fixed; bottom: 0; left: 0; width: 100%;
@@ -112,6 +113,13 @@
       padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; user-select: none;
     }
     .pill-item.selected { background: var(--accent-bg); color: var(--text); border-color: var(--border-focus); font-weight: 600; }
+
+    .auth-tabs { display: flex; gap: 12px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .auth-tab-btn {
+      padding: 10px 16px; background: none; border: none; color: var(--text-muted);
+      font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;
+    }
+    .auth-tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
 
     .loader-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -149,13 +157,13 @@
     <div id="view-catalog" class="view-content">
       <div class="filter-bar">
         <input type="text" id="searchInput" class="input-field search-input" placeholder="Поиск по названию или автору..." oninput="applyFilters()">
-        <select id="typeFilter" class="select-field" onchange="applyFilters()">
+        <select id="typeFilter" class="select-field" style="width: auto;" onchange="applyFilters()">
           <option value="">Все типы</option>
           <option value="game">Игры</option>
           <option value="app">Приложения</option>
           <option value="utility">Утилиты</option>
         </select>
-        <select id="devStatusFilter" class="select-field" onchange="applyFilters()">
+        <select id="devStatusFilter" class="select-field" style="width: auto;" onchange="applyFilters()">
           <option value="">Любой статус</option>
           <option value="Релиз">Релиз</option>
           <option value="Демо">Демо</option>
@@ -192,7 +200,7 @@
 
             <div class="form-group">
               <label>Движок / Стек</label>
-              <input type="text" id="f_engine" class="input-field" placeholder="Unity, Unreal, Godot, WebGL...">
+              <input type="text" id="f_engine" class="input-field" placeholder="Unity, Unreal, Godot...">
             </div>
 
             <div class="form-group">
@@ -206,7 +214,7 @@
             </div>
 
             <div class="form-group form-full">
-              <label>Краткое описание (для карточки) *</label>
+              <label>Краткое описание *</label>
               <input type="text" id="f_desc_short" class="input-field" required maxlength="120" placeholder="До 120 символов">
             </div>
 
@@ -230,7 +238,7 @@
             </div>
 
             <div class="form-group">
-              <label>Платформы (выберите нужные)</label>
+              <label>Платформы</label>
               <div class="pill-group" id="platformPills">
                 <div class="pill-item" onclick="togglePill(this, 'platform')">Windows</div>
                 <div class="pill-item" onclick="togglePill(this, 'platform')">Android</div>
@@ -242,7 +250,7 @@
             </div>
 
             <div class="form-group">
-              <label>Жанры (выберите до 5)</label>
+              <label>Жанры (до 5)</label>
               <div class="pill-group" id="genrePills">
                 <div class="pill-item" onclick="togglePill(this, 'genre', 5)">Экшен</div>
                 <div class="pill-item" onclick="togglePill(this, 'genre', 5)">RPG</div>
@@ -253,7 +261,6 @@
                 <div class="pill-item" onclick="togglePill(this, 'genre', 5)">Симулятор</div>
                 <div class="pill-item" onclick="togglePill(this, 'genre', 5)">Визуальная новелла</div>
                 <div class="pill-item" onclick="togglePill(this, 'genre', 5)">Песочница</div>
-                <div class="pill-item" onclick="togglePill(this, 'genre', 5)">Казуальная</div>
               </div>
             </div>
 
@@ -312,9 +319,8 @@
     </div>
 
     <div id="view-profile" class="view-content">
-      <div class="section-title">Мой профиль</div>
-      <div style="background: var(--panel-bg); border: 1px solid var(--border); padding: 32px; border-radius: 6px; text-align: center;">
-        <p style="color: var(--text-muted);">Авторизация и управление личным кабинетом разрабатываются на Шаге 2.</p>
+      <div id="profileContainer">
+        <!-- Заполняется динамически из JS -->
       </div>
     </div>
 
@@ -337,6 +343,7 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxNBexPe-YH8zamTq_9ypGy8PohYiTQs7oyPEvxZCheQSkNM_PzIJH5bmTMh12K2KuB/exec";
 
     let rawProjects = [];
+    let currentUser = JSON.parse(localStorage.getItem('indie_radar_user')) || null;
 
     function showLoader(text = "Загрузка...") {
       document.getElementById('loaderText').innerText = text;
@@ -399,6 +406,9 @@
 
         const mobileBtn = document.getElementById('mn-' + page);
         if (mobileBtn) mobileBtn.classList.add('active');
+
+        if (page === 'profile') renderProfileView();
+        if (page === 'add') prepareAddForm();
       }
       window.scrollTo(0, 0);
     }
@@ -423,7 +433,7 @@
     function createCardHTML(p) {
       const banner = p.banner || 'https://via.placeholder.com/600x337/12141d/7e859b?text=No+Banner';
       const icon = p.icon || 'https://via.placeholder.com/100/12141d/7e859b?text=Icon';
-      const genres = p.genres && p.genres.length ? p.genres.map(g => `<span class="tag-item">${g}</span>`).join('') : '';
+      const genres = p.genres && p.genres.length ? p.genres.split(', ').map(g => `<span class="tag-item">${g}</span>`).join('') : '';
 
       return `
         <div class="card" onclick="navigateTo('project', '${p.id}')">
@@ -466,22 +476,22 @@
       const p = rawProjects.find(item => item.id === id);
 
       if (!p) {
-        container.innerHTML = '<p style="color: var(--text-muted)">Проект не найден или находится на модерации.</p>';
+        container.innerHTML = '<p style="color: var(--text-muted)">Проект не найден.</p>';
         return;
       }
 
       document.title = `${p.title} — Indie Radar`;
-
       const banner = p.banner || 'https://via.placeholder.com/800x450/12141d/7e859b?text=No+Banner';
       const icon = p.icon || 'https://via.placeholder.com/100/12141d/7e859b?text=Icon';
 
       let screenshotsHTML = '';
-      if (p.screenshots && p.screenshots.length) {
+      if (p.screenshots) {
+        const list = Array.isArray(p.screenshots) ? p.screenshots : p.screenshots.split(',').map(s => s.trim());
         screenshotsHTML = `
           <div style="margin-top: 24px;">
             <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Скриншоты</div>
             <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;">
-              ${p.screenshots.map(src => `<img src="${src}" style="height: 160px; aspect-ratio: 16/9; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">`).join('')}
+              ${list.map(src => `<img src="${src}" style="height: 160px; aspect-ratio: 16/9; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">`).join('')}
             </div>
           </div>
         `;
@@ -561,14 +571,180 @@
       document.getElementById('catalog-grid').innerHTML = filtered.map(createCardHTML).join('') || '<p style="color: var(--text-muted)">Ничего не найдено.</p>';
     }
 
-    document.getElementById('addProjectForm').addEventListener('submit', async (e) => {
+    function renderProfileView() {
+      const container = document.getElementById('profileContainer');
+
+      if (!currentUser) {
+        container.innerHTML = `
+          <div style="max-width: 440px; margin: 0 auto; background: var(--panel-bg); border: 1px solid var(--border); padding: 28px; border-radius: 8px;">
+            <div class="auth-tabs">
+              <button class="auth-tab-btn active" id="tab-login" onclick="switchAuthTab('login')">Вход</button>
+              <button class="auth-tab-btn" id="tab-register" onclick="switchAuthTab('register')">Регистрация</button>
+            </div>
+
+            <!-- Форма Входа -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+              <div class="form-group" style="margin-bottom: 14px;">
+                <label>Никнейм или Email</label>
+                <input type="text" id="auth_login" class="input-field" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 20px;">
+                <label>Пароль</label>
+                <input type="password" id="auth_password" class="input-field" required>
+              </div>
+              <button type="submit" class="btn-action" style="padding: 12px;">Войти</button>
+            </form>
+
+            <!-- Форма Регистрации -->
+            <form id="registerForm" style="display: none;" onsubmit="handleRegister(event)">
+              <div class="form-group" style="margin-bottom: 14px;">
+                <label>Никнейм *</label>
+                <input type="text" id="reg_username" class="input-field" required placeholder="Gamer123">
+              </div>
+              <div class="form-group" style="margin-bottom: 14px;">
+                <label>Email *</label>
+                <input type="email" id="reg_email" class="input-field" required placeholder="user@example.com">
+              </div>
+              <div class="form-group" style="margin-bottom: 14px;">
+                <label>Пароль *</label>
+                <input type="password" id="reg_password" class="input-field" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 20px;">
+                <label>URL Аватарки (необязательно)</label>
+                <input type="url" id="reg_avatar" class="input-field" placeholder="https://...">
+              </div>
+              <button type="submit" class="btn-action" style="padding: 12px;">Зарегистрироваться</button>
+            </form>
+
+          </div>
+        `;
+      } else {
+        const userProjects = rawProjects.filter(p => p.author === currentUser.username || p.author_id === currentUser.id);
+        const myProjectsHTML = userProjects.length ? userProjects.map(createCardHTML).join('') : '<p style="color: var(--text-muted)">Вы еще не опубликовали ни одного проекта.</p>';
+
+        container.innerHTML = `
+          <div style="background: var(--panel-bg); border: 1px solid var(--border); padding: 24px; border-radius: 8px; margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <img src="${currentUser.avatar}" style="width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--border); object-fit: cover;">
+              <div>
+                <h2 style="font-size: 20px; font-weight: 700;">${currentUser.username}</h2>
+                <div style="font-size: 13px; color: var(--text-muted);">${currentUser.email}</div>
+              </div>
+            </div>
+            <button onclick="logout()" class="btn-action btn-secondary" style="width: auto; padding: 10px 20px;">Выйти из аккаунта</button>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div class="section-title" style="margin-bottom: 0;">Мои проекты (${userProjects.length})</div>
+            <button onclick="navigateTo('add')" class="btn-action" style="width: auto; padding: 8px 16px;">+ Добавить новый</button>
+          </div>
+
+          <div class="grid">${myProjectsHTML}</div>
+        `;
+      }
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+      document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+    }
+
+    async function handleLogin(e) {
       e.preventDefault();
-      showLoader("Отправка проекта на модерацию...");
+      showLoader("Авторизация...");
 
       const payload = {
+        action: 'login',
+        login: document.getElementById('auth_login').value,
+        password: document.getElementById('auth_password').value
+      };
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          currentUser = result.user;
+          localStorage.setItem('indie_radar_user', JSON.stringify(currentUser));
+          renderProfileView();
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        alert("Ошибка сети: " + err.toString());
+      } finally {
+        hideLoader();
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      showLoader("Создание аккаунта...");
+
+      const payload = {
+        action: 'register',
+        username: document.getElementById('reg_username').value,
+        email: document.getElementById('reg_email').value,
+        password: document.getElementById('reg_password').value,
+        avatar: document.getElementById('reg_avatar').value
+      };
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          alert("Регистрация завершена!");
+          currentUser = result.user;
+          localStorage.setItem('indie_radar_user', JSON.stringify(currentUser));
+          renderProfileView();
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        alert("Ошибка регистрации: " + err.toString());
+      } finally {
+        hideLoader();
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('indie_radar_user');
+      renderProfileView();
+    }
+
+    function prepareAddForm() {
+      const authorInput = document.getElementById('f_author');
+      if (currentUser) {
+        authorInput.value = currentUser.username;
+        authorInput.readOnly = true;
+      } else {
+        authorInput.value = '';
+        authorInput.readOnly = false;
+      }
+    }
+
+    document.getElementById('addProjectForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showLoader("Отправка проекта...");
+
+      const payload = {
+        action: 'create_project',
         type: document.getElementById('f_type').value,
         title: document.getElementById('f_title').value,
         author: document.getElementById('f_author').value,
+        author_id: currentUser ? currentUser.id : '',
         engine: document.getElementById('f_engine').value,
         icon: document.getElementById('f_icon').value,
         banner: document.getElementById('f_banner').value,
@@ -594,7 +770,7 @@
           body: JSON.stringify(payload)
         });
 
-        alert("Успешно! Проект отправлен на модерацию.");
+        alert("Проект отправлен на модерацию!");
         document.getElementById('addProjectForm').reset();
         document.querySelectorAll('.pill-item.selected').forEach(el => el.classList.remove('selected'));
         navigateTo('catalog');
