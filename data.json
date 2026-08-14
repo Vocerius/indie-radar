@@ -1,0 +1,14 @@
+[
+  {
+    "id": "",
+    "title": "Test Game",
+    "author": "Vocer",
+    "description": "Описание",
+    "game_url": "https://docs.google.com",
+    "cover_url": "https://docs.google.com",
+    "tags": [
+      "game"
+    ],
+    "created_at": ""
+  }
+]
