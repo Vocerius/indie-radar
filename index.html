@@ -3,205 +3,462 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Indie Radar — Витрина инди-проектов</title>
+  <title>Indie Radar</title>
   <style>
     :root {
-      --bg: #0f111a;
-      --card-bg: #1a1d2b;
-      --accent: #6c5ce7;
-      --accent-hover: #5b4bc4;
-      --text: #e2e8f0;
-      --text-dim: #94a3b8;
+      --bg: #090a0f;
+      --panel-bg: #12141d;
+      --border: #222634;
+      --border-focus: #4a5268;
+      --text: #ffffff;
+      --text-muted: #7e859b;
+      --accent: #ffffff;
+      --accent-bg: #1c202d;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 50px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 80px; }
 
     header {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 20px 40px; background: rgba(26, 29, 43, 0.8); backdrop-filter: blur(10px);
-      position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #2d3248;
+      padding: 16px 32px; background: var(--panel-bg);
+      position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border);
     }
 
-    .logo { font-size: 24px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 8px; }
-    .logo span { color: var(--accent); }
+    .brand { display: flex; align-items: center; gap: 24px; }
+    .logo { font-size: 20px; font-weight: 700; letter-spacing: 1px; color: var(--text); text-transform: uppercase; }
 
-    .btn {
-      background: var(--accent); color: white; border: none; padding: 10px 20px;
-      border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;
+    .desktop-nav { display: flex; gap: 8px; }
+    .nav-btn {
+      background: transparent; color: var(--text-muted); border: 1px solid transparent;
+      padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: 0.15s; text-decoration: none; display: flex; align-items: center; justify-content: center;
     }
-    .btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .nav-btn:hover { color: var(--text); background: var(--accent-bg); }
+    .nav-btn.active { color: var(--text); background: var(--accent-bg); border-color: var(--border); }
 
-    .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
-    
-    .grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;
+    .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+    .view-content { display: none; }
+    .view-content.active { display: block; }
+
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .input-field, .select-field, .textarea-field {
+      background: var(--panel-bg); border: 1px solid var(--border); color: var(--text);
+      padding: 10px 14px; border-radius: 4px; font-size: 14px; outline: none; transition: 0.15s;
     }
+    .input-field:focus, .select-field:focus, .textarea-field:focus { border-color: var(--border-focus); }
+    .search-input { flex-grow: 1; min-width: 200px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
 
     .card {
-      background: var(--card-bg); border-radius: 12px; overflow: hidden;
-      border: 1px solid #2d3248; transition: 0.3s; display: flex; flex-direction: column;
+      background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px;
+      overflow: hidden; transition: 0.2s; display: flex; flex-direction: column;
     }
-    .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+    .card:hover { border-color: var(--border-focus); transform: translateY(-2px); }
 
-    .card-cover { width: 100%; height: 160px; object-fit: cover; background: #25293c; }
-    .card-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
-    .card-title { font-size: 18px; margin-bottom: 5px; }
-    .card-author { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
-    .card-desc { font-size: 14px; color: #cbd5e1; margin-bottom: 15px; line-height: 1.4; flex-grow: 1; }
-
-    .tags { display: flex; wrap: wrap; gap: 6px; margin-bottom: 15px; }
-    .tag { background: #25293c; color: var(--accent); font-size: 11px; padding: 4px 8px; border-radius: 4px; }
-
-    .card-link {
-      display: block; text-align: center; background: #25293c; color: white;
-      text-decoration: none; padding: 10px; border-radius: 6px; font-weight: 600; transition: 0.2s;
+    .banner-container { width: 100%; aspect-ratio: 16 / 9; background: #000; position: relative; overflow: hidden; }
+    .card-banner { width: 100%; height: 100%; object-fit: cover; }
+    
+    .card-header-overlay {
+      position: absolute; bottom: 8px; left: 8px; display: flex; align-items: center; gap: 8px;
     }
-    .card-link:hover { background: var(--accent); }
+    .card-icon { width: 36px; height: 36px; aspect-ratio: 1 / 1; border-radius: 4px; border: 1px solid var(--border); object-fit: cover; background: var(--panel-bg); }
+
+    .card-body { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .card-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .card-desc { font-size: 13px; color: #a0a7bc; margin-bottom: 16px; line-height: 1.4; flex-grow: 1; }
+
+    .tag-list { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag-item { font-size: 11px; background: var(--accent-bg); color: var(--text-muted); padding: 2px 6px; border-radius: 2px; border: 1px solid var(--border); }
+
+    .btn-action {
+      display: block; width: 100%; text-align: center; background: var(--text); color: var(--bg);
+      font-weight: 600; font-size: 13px; padding: 10px; border-radius: 4px; text-decoration: none; border: none; cursor: pointer;
+    }
+    .btn-action:hover { opacity: 0.9; }
+
+    .mobile-nav {
+      display: none; position: fixed; bottom: 0; left: 0; width: 100%;
+      background: var(--panel-bg); border-top: 1px solid var(--border); z-index: 1000;
+      justify-content: space-around; padding: 8px 0;
+    }
+    .mobile-nav-item {
+      color: var(--text-muted); font-size: 11px; text-decoration: none;
+      display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer;
+    }
+    .mobile-nav-item.active { color: var(--text); }
+
+    @media (max-width: 768px) and (orientation: portrait) {
+      body { padding-bottom: 70px; }
+      .desktop-nav { display: none; }
+      .mobile-nav { display: flex; }
+    }
 
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000;
+      background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 16px;
     }
     .modal {
-      background: var(--card-bg); padding: 30px; border-radius: 12px; width: 100%; max-width: 500px;
-      border: 1px solid #2d3248; position: relative;
+      background: var(--panel-bg); border: 1px solid var(--border); border-radius: 6px;
+      width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto; padding: 24px; position: relative;
     }
-    .modal h2 { margin-bottom: 20px; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: var(--text-dim); }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 10px; background: #0f111a; border: 1px solid #2d3248;
-      border-radius: 6px; color: white; outline: none;
+    .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-full { grid-column: span 2; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .close-modal { position: absolute; top: 16px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+
+    .loader-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); display: none; flex-direction: column;
+      justify-content: center; align-items: center; z-index: 3000; gap: 16px;
     }
-    .form-group textarea { resize: vertical; height: 80px; }
-    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-dim); }
+    .spinner {
+      width: 40px; height: 40px; border: 3px solid var(--border);
+      border-top-color: var(--text); border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">📡 Indie<span>Radar</span></div>
-    <button class="btn" onclick="openModal()">+ Добавить проект</button>
+    <div class="brand">
+      <div class="logo">Indie Radar</div>
+      <nav class="desktop-nav">
+        <button class="nav-btn active" onclick="switchTab('main')">Главная</button>
+        <button class="nav-btn" onclick="switchTab('catalog')">Каталог</button>
+        <button class="nav-btn" onclick="openModal('addModal')">+ Добавить</button>
+        <button class="nav-btn" onclick="switchTab('profile')">Профиль</button>
+      </nav>
+    </div>
   </header>
 
   <div class="container">
-    <div class="grid" id="games-grid">
-      <p style="color: var(--text-dim);">Загрузка проектов...</p>
+    
+    <div id="view-main" class="view-content active">
+      <div class="section-title">Новые публикации</div>
+      <div class="grid" id="main-grid"></div>
     </div>
+
+    <div id="view-catalog" class="view-content">
+      <div class="filter-bar">
+        <input type="text" id="searchInput" class="input-field search-input" placeholder="Поиск по названию или автору..." oninput="applyFilters()">
+        <select id="typeFilter" class="select-field" onchange="applyFilters()">
+          <option value="">Все типы</option>
+          <option value="game">Игры</option>
+          <option value="app">Приложения</option>
+          <option value="utility">Утилиты</option>
+        </select>
+        <select id="devStatusFilter" class="select-field" onchange="applyFilters()">
+          <option value="">Любой статус</option>
+          <option value="Релиз">Релиз</option>
+          <option value="Демо">Демо</option>
+          <option value="В разработке">В разработке</option>
+        </select>
+      </div>
+      <div class="grid" id="catalog-grid"></div>
+    </div>
+
+    <div id="view-profile" class="view-content">
+      <div class="section-title">Мой профиль</div>
+      <div style="background: var(--panel-bg); border: 1px solid var(--border); padding: 32px; border-radius: 6px; text-align: center;">
+        <p style="color: var(--text-muted); margin-bottom: 16px;">Авторизация и управление личным кабинетом разрабатываются на Шаге 2.</p>
+      </div>
+    </div>
+
   </div>
 
-  <div class="modal-overlay" id="modal">
+  <nav class="mobile-nav">
+    <button class="mobile-nav-item active" id="mn-main" onclick="switchTab('main')">Главная</button>
+    <button class="mobile-nav-item" id="mn-catalog" onclick="switchTab('catalog')">Каталог</button>
+    <button class="mobile-nav-item" id="mn-add" onclick="openModal('addModal')">+</button>
+    <button class="mobile-nav-item" id="mn-profile" onclick="switchTab('profile')">Профиль</button>
+  </nav>
+
+  <div class="modal-overlay" id="addModal">
     <div class="modal">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <h2>Добавить свой проект</h2>
-      <form id="add-game-form">
-        <div class="form-group">
-          <label>Название игры / приложения *</label>
-          <input type="text" id="title" required placeholder="Например: Cyber Adventure">
+      <button class="close-modal" onclick="closeModal('addModal')">&times;</button>
+      <div class="modal-title">Публикация проекта</div>
+      <form id="addProjectForm">
+        <div class="form-grid">
+          
+          <div class="form-group">
+            <label>Тип проекта *</label>
+            <select id="f_type" class="select-field" required>
+              <option value="game">Игра</option>
+              <option value="app">Приложение</option>
+              <option value="utility">Утилита</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Название *</label>
+            <input type="text" id="f_title" class="input-field" required placeholder="Например: Cyber Runner">
+          </div>
+
+          <div class="form-group">
+            <label>Автор / Студия *</label>
+            <input type="text" id="f_author" class="input-field" required placeholder="Ваш никнейм">
+          </div>
+
+          <div class="form-group">
+            <label>Движок / Стек</label>
+            <input type="text" id="f_engine" class="input-field" placeholder="Unity, Unreal, Godot, WebGL...">
+          </div>
+
+          <div class="form-group">
+            <label>URL Иконки (1:1)</label>
+            <input type="url" id="f_icon" class="input-field" placeholder="https://.../icon.png">
+          </div>
+
+          <div class="form-group">
+            <label>URL Баннера (16:9) *</label>
+            <input type="url" id="f_banner" class="input-field" required placeholder="https://.../banner.png">
+          </div>
+
+          <div class="form-group form-full">
+            <label>Краткое описание (для карточки) *</label>
+            <input type="text" id="f_desc_short" class="input-field" required maxlength="120" placeholder="До 120 символов">
+          </div>
+
+          <div class="form-group form-full">
+            <label>Полное описание (подробное)</label>
+            <textarea id="f_desc_full" class="textarea-field" rows="4" placeholder="Детальная информация о проекте..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Ссылка на скачивание/игру *</label>
+            <input type="url" id="f_download_url" class="input-field" required placeholder="https://...">
+          </div>
+
+          <div class="form-group">
+            <label>Статус разработки</label>
+            <select id="f_status_dev" class="select-field">
+              <option value="В разработке">В разработке</option>
+              <option value="Демо">Демо</option>
+              <option value="Релиз">Релиз</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Версия</label>
+            <input type="text" id="f_version" class="input-field" value="1.0.0">
+          </div>
+
+          <div class="form-group">
+            <label>Размер файла</label>
+            <input type="text" id="f_size" class="input-field" placeholder="150 МБ / Web">
+          </div>
+
+          <div class="form-group">
+            <label>Платформы (через запятую)</label>
+            <input type="text" id="f_platform" class="input-field" placeholder="Windows, Android, Web">
+          </div>
+
+          <div class="form-group">
+            <label>Жанры (через запятую)</label>
+            <input type="text" id="f_genres" class="input-field" placeholder="Action, RPG, Indie">
+          </div>
+
+          <div class="form-group">
+            <label>Возрастной рейтинг</label>
+            <select id="f_age_rating" class="select-field">
+              <option value="0+">0+</option>
+              <option value="6+">6+</option>
+              <option value="12+">12+</option>
+              <option value="16+">16+</option>
+              <option value="18+">18+</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Дата релиза</label>
+            <input type="date" id="f_release_date" class="input-field">
+          </div>
+
+          <div class="form-group form-full">
+            <label>Скриншоты (URL через запятую)</label>
+            <input type="text" id="f_screenshots" class="input-field" placeholder="https://img1.jpg, https://img2.jpg">
+          </div>
+
+          <div class="form-group form-full">
+            <label>Видео / Трейлер (URL YouTube)</label>
+            <input type="url" id="f_video_trailer" class="input-field" placeholder="https://youtube.com/...">
+          </div>
+
+          <div class="form-group form-full">
+            <label>Список изменений (Changelog)</label>
+            <textarea id="f_changelog" class="textarea-field" rows="2" placeholder="Что нового в этой версии..."></textarea>
+          </div>
+
+          <div class="form-full">
+            <button type="submit" class="btn-action">Отправить на модерацию</button>
+          </div>
+
         </div>
-        <div class="form-group">
-          <label>Ваш никнейм / Команда *</label>
-          <input type="text" id="author" required placeholder="Например: AlexDev">
-        </div>
-        <div class="form-group">
-          <label>Краткое описание *</label>
-          <textarea id="description" required placeholder="О чём ваш проект?"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Ссылка на проект (Itch.io, Google Drive, Steam) *</label>
-          <input type="url" id="game_url" required placeholder="https://...">
-        </div>
-        <div class="form-group">
-          <label>Ссылка на обложку / скриншот</label>
-          <input type="url" id="cover_url" placeholder="https://... (прямая ссылка на картинку)">
-        </div>
-        <div class="form-group">
-          <label>Теги (через запятую)</label>
-          <input type="text" id="tags" placeholder="PixelArt, RPG, WebGL">
-        </div>
-        <button type="submit" class="btn" style="width: 100%;" id="submit-btn">Отправить на модерацию</button>
       </form>
     </div>
   </div>
 
+  <div class="loader-overlay" id="globalLoader">
+    <div class="spinner"></div>
+    <div style="font-size: 14px; color: var(--text-muted);" id="loaderText">Загрузка данных...</div>
+  </div>
+
   <script>
+    
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxNBexPe-YH8zamTq_9ypGy8PohYiTQs7oyPEvxZCheQSkNM_PzIJH5bmTMh12K2KuB/exec";
+    
+    let rawProjects = [];
 
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxNBexPe-YH8zamTq_9ypGy8PohYiTQs7oyPEvxZCheQSkNM_PzIJH5bmTMh12K2KuB/exec";
+    function showLoader(text = "Загрузка данных...") {
+      document.getElementById('loaderText').innerText = text;
+      document.getElementById('globalLoader').style.display = 'flex';
+    }
 
-    async function loadGames() {
-      const grid = document.getElementById('games-grid');
+    function hideLoader() {
+      document.getElementById('globalLoader').style.display = 'none';
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+
+      document.getElementById('view-' + tabId).classList.add('active');
+
+      const desktopBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (desktopBtn) desktopBtn.classList.add('active');
+
+      const mobileBtn = document.getElementById('mn-' + tabId);
+      if (mobileBtn) mobileBtn.classList.add('active');
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    async function fetchProjects() {
+      showLoader("Загрузка каталога...");
       try {
-        const response = await fetch('data.json?t=' + new Date().getTime());
-        if (!response.ok) throw new Error('Данные пока не опубликованы');
-        
-        const games = await response.json();
-        grid.innerHTML = '';
-
-        if (games.length === 0) {
-          grid.innerHTML = '<p style="color: var(--text-dim);">Пока нет опубликованных проектов. Будьте первыми!</p>';
-          return;
-        }
-
-        games.forEach(game => {
-          const cover = game.cover_url || 'https://via.placeholder.com/400x200/25293c/6c5ce7?text=Indie+Radar';
-          const tagsHTML = game.tags ? game.tags.map(t => `<span class="tag">${t}</span>`).join('') : '';
-
-          grid.innerHTML += `
-            <div class="card">
-              <img src="${cover}" class="card-cover" alt="${game.title}">
-              <div class="card-body">
-                <h3 class="card-title">${game.title}</h3>
-                <div class="card-author">Автор: ${game.author}</div>
-                <p class="card-desc">${game.description}</p>
-                <div class="tags">${tagsHTML}</div>
-                <a href="${game.game_url}" target="_blank" class="card-link">Открыть проект</a>
-              </div>
-            </div>
-          `;
-        });
+        const res = await fetch('data.json?t=' + new Date().getTime());
+        if (!res.ok) throw new Error("Нет данных");
+        rawProjects = await res.json();
+        renderProjects(rawProjects);
       } catch (err) {
-        grid.innerHTML = '<p style="color: var(--text-dim);">Пока нет опубликованных проектов. Отправьте первый через кнопку выше!</p>';
+        document.getElementById('main-grid').innerHTML = '<p style="color: var(--text-muted)">Проекты пока не опубликованы.</p>';
+      } finally {
+        hideLoader();
       }
     }
 
-    function openModal() { document.getElementById('modal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    function createCardHTML(p) {
+      const banner = p.banner || 'https://via.placeholder.com/600x337/12141d/7e859b?text=No+Banner';
+      const icon = p.icon || 'https://via.placeholder.com/100/12141d/7e859b?text=Icon';
+      const genres = p.genres && p.genres.length ? p.genres.map(g => `<span class="tag-item">${g}</span>`).join('') : '';
 
-    document.getElementById('add-game-form').addEventListener('submit', async (e) => {
+      return `
+        <div class="card">
+          <div class="banner-container">
+            <img src="${banner}" class="card-banner" alt="${p.title}">
+            <div class="card-header-overlay">
+              <img src="${icon}" class="card-icon" alt="${p.title}">
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">${p.title}</div>
+            <div class="card-meta">
+              <span>${p.author}</span> • 
+              <span>${p.status_dev || 'В разработке'}</span>
+            </div>
+            <p class="card-desc">${p.description_short || ''}</p>
+            <div class="tag-list">${genres}</div>
+            <a href="${p.download_url}" target="_blank" class="btn-action">Открыть проект</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProjects(data) {
+      const mainGrid = document.getElementById('main-grid');
+      const catalogGrid = document.getElementById('catalog-grid');
+
+      if (!data.length) {
+        mainGrid.innerHTML = catalogGrid.innerHTML = '<p style="color: var(--text-muted)">Список пуст.</p>';
+        return;
+      }
+
+      const cardsHTML = data.map(createCardHTML).join('');
+      mainGrid.innerHTML = cardsHTML;
+      catalogGrid.innerHTML = cardsHTML;
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const type = document.getElementById('typeFilter').value;
+      const status = document.getElementById('devStatusFilter').value;
+
+      const filtered = rawProjects.filter(p => {
+        const matchesSearch = p.title.toLowerCase().includes(search) || p.author.toLowerCase().includes(search);
+        const matchesType = !type || p.type === type;
+        const matchesStatus = !status || p.status_dev === status;
+        return matchesSearch && matchesType && matchesStatus;
+      });
+
+      document.getElementById('catalog-grid').innerHTML = filtered.map(createCardHTML).join('') || '<p style="color: var(--text-muted)">Ничего не найдено.</p>';
+    }
+
+    document.getElementById('addProjectForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.innerText = 'Отправка...';
-      submitBtn.disabled = true;
+      closeModal('addModal');
+      showLoader("Отправка проекта на модерацию...");
 
       const payload = {
-        title: document.getElementById('title').value,
-        author: document.getElementById('author').value,
-        description: document.getElementById('description').value,
-        game_url: document.getElementById('game_url').value,
-        cover_url: document.getElementById('cover_url').value,
-        tags: document.getElementById('tags').value
+        type: document.getElementById('f_type').value,
+        title: document.getElementById('f_title').value,
+        author: document.getElementById('f_author').value,
+        engine: document.getElementById('f_engine').value,
+        icon: document.getElementById('f_icon').value,
+        banner: document.getElementById('f_banner').value,
+        description_short: document.getElementById('f_desc_short').value,
+        description_full: document.getElementById('f_desc_full').value,
+        download_url: document.getElementById('f_download_url').value,
+        status_dev: document.getElementById('f_status_dev').value,
+        version: document.getElementById('f_version').value,
+        size: document.getElementById('f_size').value,
+        platform: document.getElementById('f_platform').value,
+        genres: document.getElementById('f_genres').value,
+        age_rating: document.getElementById('f_age_rating').value,
+        release_date: document.getElementById('f_release_date').value,
+        screenshots: document.getElementById('f_screenshots').value,
+        video_trailer: document.getElementById('f_video_trailer').value,
+        changelog: document.getElementById('f_changelog').value
       };
 
       try {
-        await fetch(GAS_WEB_APP_URL, {
+        await fetch(GAS_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
 
-        alert('🎉 Проект успешно отправлен! Он появится на сайте после вашей модерации в Google Таблице.');
-        closeModal();
-        document.getElementById('add-game-form').reset();
+        alert("Успешно! Проект отправлен на модерацию.");
+        document.getElementById('addProjectForm').reset();
       } catch (err) {
-        alert('Ошибка отправки: ' + err.toString());
+        alert("Ошибка при отправке: " + err.toString());
       } finally {
-        submitBtn.innerText = 'Отправить на модерацию';
-        submitBtn.disabled = false;
+        hideLoader();
       }
     });
 
-    loadGames();
+    fetchProjects();
   </script>
 </body>
 </html>
